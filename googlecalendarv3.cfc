@@ -537,10 +537,9 @@
     </cfif>
 
     <cfif structKeyExists(arguments, "description")>
-	    <cfset local.body["description"] = "Hello World">	
+	    <cfset local.body["description"] = arguments.description>	
     </cfif>
 
-<!---
     <cfif structKeyExists(arguments, "location")>
 	    <cfset local.body["location"] = arguments.location>	
     </cfif>
@@ -548,13 +547,8 @@
     <cfif structKeyExists(arguments, "creator")>
 	    <cfset local.body["creator"] = arguments.creator>	
     </cfif>
---->
 
     <cfset ValidateCalendar(argumentCollection: arguments)>
-
-    <cfdump var="#local.body#">
-    <cfabort>
-
 
     <cfset local.body = SerializeJSON(local.body)>
     <cfset local.result = MakeRequest(url: local.curl, method: 'POST', body: local.body)>
