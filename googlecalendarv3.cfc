@@ -463,7 +463,7 @@
     <cfset HandleResponse(result: local.result, error: local.e, resultType: "none")>		
 </cffunction>
 
-<cffunction name="removeAllEvents" access="public" output="false">
+<cffunction name="removeAllEvents" access="public" output="false" returntype="void">
 	<cfargument name="calendarId" type="string" required="true" hint="Calendar identifier">
     <cfargument name="resultType" required="false" default="none" type="string" hint="none">
 
@@ -472,28 +472,7 @@
     <cfset local.curl = "/calendars/" & urlEncodedFormat(arguments.calendarId) & "/clear">
     <cfset local.result = MakeRequest(url: local.curl, method: 'POST')>
 
-<!---		
-	<cfset local.rawEvents = getEvents(calendarId: arguments.calendarId, singleEvents: true, resultType: 'raw')>
-	
-	<cfset local.fileContent = DeserializeJSON(local.rawEvents.Filecontent)>
-
-	<cfdump var="#local.fileContent#">
-	<cfabort>
-
-	<cfif structKeyExists(local.fileContent, 'items')>
-		<cfset local.events = local.fileContent.items>
-	<cfelse>
-		<!--- No items in the calendar found --->
-		<cfreturn>
-	</cfif>
-
-	<cfloop array="#local.events#" index="local.event">
-		<cfset removeEvent(calendarId: arguments.calendarId, eventId: local.event.id)>
-	</cfloop>     
---->
-
     <cfset HandleResponse(result: local.result, error: local.e, resultType: "none")>        
-
 </cffunction>
 
 <cffunction name="ValidateEvent" access="private" returntype="void">
@@ -555,126 +534,9 @@
 
     <cfreturn HandleResponse(result: local.result, error: local.e, resultType: arguments.resultType)>
 
-	<!---
-	<cfargument name="busy" type="boolean" required="false" default="false">
-	<cfargument name="eventstatus" type="string" required="false">
-	
-	<cfargument name="recurrence" type="struct" required="false" hint="struct with all recurrence info you need these values in your struct... dow, dom, interval, frequency, until, byday">
-    <cfargument name="resultType" type="string" required="false" hint="fileContent,fullResponse,query" default="query">
-
-	<cfset var LOCAL = structNew()>
-	<cfset LOCAL.curl = "https://www.google.com/calendar/feeds/default/private/full">
-	<cfset LOCAL.masterStart = arguments.startdate>
- 	<cfset LOCAL.error = false>
- 
-	<cfif structKeyExists(arguments, "allDay") and arguments.allDay>
-  		<cfset LOCAL.masterEnd = arguments.startdate>
-	<cfelse>
-    	<cfset LOCAL.masterEnd = arguments.enddate>
-	</cfif>
-
-  	<cfif structKeyExists(arguments, "calid")>
-    	<!--- manipulate the curl --->
-    	<cfset LOCAL.curl = replace(LOCAL.curl, "/default", "/#arguments.calid#")>
-  	</cfif>
-
-	<!--- convert busy/eventstatus --->
-	<cfif structKeyExists(arguments, "busy")>
-		<cfif arguments.busy>
-			<cfset LOCAL.busyCode = getBusyStatusCode("busy")>
-    	<cfelse>
-      		<cfset LOCAL.busyCode = getBusyStatusCode("free")>
-    	</cfif>
-  	</cfif>
-
-  	<!--- format the arguments --->
-  	<cfloop collection="#arguments#" item="LOCAL.i">
-  		<cfif isDate(arguments[LOCAL.i])>
-        	<cfif arguments.allday>
-            	<cfset arguments[LOCAL.i] = DateFormat(arguments[LOCAL.i],'yyyy-mm-dd')>
-            <cfelse>
-                <cfset arguments[LOCAL.i] = DateFormat(arguments[LOCAL.i],'yyyy-mm-dd') & 'T' & TimeFormat(arguments[LOCAL.i],'HH:mm:ss')>
-            </cfif>
-        </cfif>
-        <cfif NOT isStruct(arguments[LOCAL.i]) AND LOCAL.i NEQ "description" AND structKeyExists(arguments, LOCAL.i)>
-			<cfset arguments[LOCAL.i] = xmlFormat(arguments[LOCAL.i])>
-  		</cfif>
-  	</cfloop>		
-
-    <cfprocessingdirective SUPPRESSWHITESPACE="true">
-    <cfsavecontent variable="LOCAL.body">
-    <cfoutput>
-    	<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gd='http://schemas.google.com/g/2005'>
-		<category scheme='http://schemas.google.com/g/2005##kind' term='http://schemas.google.com/g/2005##event'></category>
-       	<title type='text'>#arguments.title#</title>
-       	<content type='text'><![CDATA[#arguments.content#]]></content>
-		<cfif structKeyExists(arguments, "authorname") and structKeyExists(arguments, "authoremail")>
-            <author>
-           	<name>#arguments.authorName#</name>
-           	<email>#arguments.authorEmail#</email>
-       		</author>
-    	</cfif>
- 
-    	<cfif StructKeyExists(LOCAL, "busyCode")>
-       		<gd:transparency value='http://schemas.google.com/g/2005##event.opaque'> </gd:transparency>
-    	</cfif>
- 
-    	<cfif StructKeyExists(LOCAL, "eventCode")>
-       		<gd:eventStatus value='http://schemas.google.com/g/2005##event.confirmed'> </gd:eventStatus>
-    	</cfif>
- 
-    	<!--- if the structure is defined then its recurrence time!--->
-    	<cfif structKeyExists(arguments, "recurrence") AND isStruct(arguments.recurrence)>
-       		<cfset LOCAL.recur = createRecurrenceString(recurrence: arguments.recurrence, allday: arguments.allday, start: LOCAL.masterStart, end: LOCAL.masterEnd)>
-			<gd:recurrence xmlns:gd="http://schemas.google.com/g/2005">#LOCAL.recur#</gd:recurrence>
-    	<cfelse>
-		<!--- no recurrence so set the start and end date/times--->
-			<cfif structKeyExists(arguments, "where")>
-           		<gd:where valueString='#arguments.where#'></gd:where>
-    		</cfif>         
-       		<gd:when startTime='#arguments.startdate#' endTime='#arguments.enddate#'></gd:when>
-    	</cfif>
-      	</entry>
-    </cfoutput>
-    </cfsavecontent>
-    </cfprocessingdirective>
-
-  	<cftry>
-		<cfset LOCAL.bodyXML = xmlparse(LOCAL.body)>
-    <cfcatch>    	
-    	<!--- future: add error handling --->
-		<cfrethrow>
-    </cfcatch>
-  	</cftry>
-
-    <!--- make request to google --->
-    <cfset LOCAL.r = 0>
-    <cfloop condition="LOCAL.r EQ 0 OR (LOCAL.resultStatus EQ 302 AND LOCAL.r LT variables.redirects)">
-        <cfhttp url="#LOCAL.curl#" method="POST" result="LOCAL.result" redirect="false">
-            <cfhttpparam type="header" name="Content-Type" value="application/atom+xml">
-            <cfhttpparam type="header" name="Authorization" value="GoogleLogin auth=#variables.authcode#">
-            <cfhttpparam type="body" value="#LOCAL.bodyXML#">
-        </cfhttp>
-        <cfset LOCAL.r = LOCAL.r + 1>
-        <cfif StructKeyExists(LOCAL.result.responseheader, 'location')>
-    		<cfset LOCAL.curl = LOCAL.result.responseheader.location>
-        </cfif>
-		<cfset LOCAL.resultStatus = LOCAL.result.responseheader.status_code>
-    </cfloop>
-  
-  	<cfif arguments.resultType eq 'fileContent'>
-    	<cfreturn LOCAL.result.fileContent> 
-  	<cfelseIf arguments.resultType eq 'fullResponse'>
-   		<cfreturn LOCAL.result>
-  	<cfelse>
-  		<cfif LOCAL.result.responseheader.status_code EQ "201" or LOCAL.result.responseheader.status_code EQ "200">
-            <cfreturn eventFilecontentToQuery(xmlParse(LOCAL.result.fileContent))>
-    	<cfelse>
-        	<cfthrow message="Error: #LOCAL.result.responseheader.status_code#" detail="#LOCAL.result.filecontent#">
-			<!--- <cfreturn "Error: #LOCAL.result.responseheader.status_code# #LOCAL.result.filecontent#"> --->
-        </cfif>
-	</cfif>
-	--->
 </cffunction>
+
+
+
 
 </cfcomponent>
