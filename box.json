@@ -1,0 +1,48 @@
+{
+    "name" : "CF-GoogleCal-V3",
+    // ForgeBox unique slug
+    "slug" : "CF-GoogleCal-V3",
+    // semantic version of your package
+    "version" : "0.5.1",
+    // author of this package
+    "author" : "William Eatman <billeatman@hotmail.com>",
+    // location of where to download the package, overrides ForgeBox location
+    "location" : "https://github.com/billeatman/CF-GoogleCal-V3/archive/master.zip",
+    // This boolean bit determines if the container directory will contain a sub-directory according to
+    // the package slug name, the default is true
+    "createPackageDirectory" : "true",
+    // project homepage URL
+    "Homepage" : "https://github.com/billeatman/CF-GoogleCal-V3",
+    // documentation URL
+    "Documentation" : "https://github.com/billeatman/CF-GoogleCal-V3",
+    // source repository, valid keys: type, URL
+    "Repository" : {
+        "type" : "git", "URL" : "https://github.com/billeatman/CF-GoogleCal-V3.git"
+    },
+    // bug issue management URL
+    "Bugs" : "https://github.com/billeatman/CF-GoogleCal-V3/issues",
+    // ForgeBox short description
+    "shortDescription" : "Google Calendar V3 for ColdFusion",
+    // ForgeBox keywords, array of strings
+    "keywords" : [ "google", "calendar", "API", "V3" ],
+    // Bit that if set to true, will not allow ForgeBox posting if using commands
+    "private" : "boolean",
+    // cfml engines it supports, type and version
+    "engines" : [
+        { "type" : "railo", "version" : ">=4.1.x" },
+        { "type" : "adobe", "version" : ">=9.0.0" }
+    ],
+    // default engine to use using our run embedded server command
+    // Available engines are railo, cf9, cf10, cf11
+    "defaultEngine" : "cf11, cf10, cf9, railo",
+    // default engine port using our run embedded server command
+    "defaultPort" : 8080,
+    // Generation CFC preference by CommandBox scaffolders
+    "CFCType" : "tag"
+    // license array of licenses it can have
+    "License" : [
+        { "type" : "APACHE 2", "URL" : "http://www.apache.org/licenses/LICENSE-2.0.html" }
+    ]
+    // contributors array of strings or structs: name,email,url
+    "Contributors" : [{name="William Eatman", email="billeatman@hotmail.com", url="http://www.progratory.com"}],
+}
