@@ -27,7 +27,7 @@
 
 	<cfset local.authSubToken = 'Bearer ' & variables.oauth2.getAccess_token() />
 	
-	<cfif FindNoCase("http", arguments.url, 1) EQ 0>
+	<cfif lcase(mid(arguments.url, 1, 4)) NEQ 'http' >
 		<cfset local.curl = variables.baseAPIEndpoint & arguments.url>
 	<cfelse>
 		<cfset local.curl = arguments.url>	
@@ -69,7 +69,17 @@
         <cfif StructKeyExists(LOCAL.result.responseheader, 'location')>
             <cfset LOCAL.curl = LOCAL.result.responseheader.location>
         </cfif>
+        
+        <cftry>            
         <cfset LOCAL.resultStatus = LOCAL.result.responseheader.status_code>
+            <cfcatch>
+                <cfdump var="#LOCAL.curl#">
+                <cfdump var="#LOCAL.result#">
+                <cfabort>
+            </cfcatch>
+        </cftry>
+
+
     </cfloop>
 
     <cfreturn local.result>
