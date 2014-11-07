@@ -2,11 +2,35 @@
 
 A CFC for the Google Calendar V3 API. 
 
-# Getting Started #
-I'll get back to you when something works.
+# CommandBox #
 
+http://www.ortussolutions.com/products/commandbox
+
+```
+   install cf-googlecal-v3
+```
+
+# Getting Started #
+
+The Examples project provides a working template with oauth2 to get started.
+https://github.com/billeatman/CF-GoogleCal-V3-Examples
+
+Calendar Methods Implemented:
+   GetAllCalendars
+   GetCalendar
+   CreateCalendar
+   RemoveCalendar
+   UpdateCalendar
+
+Event Methods Implemented:
+   GetAllEvents
+   GetEvents
+   CreateEvent
+   RemoveAllEvents
+   RemoveEvent
+   
 # Help Needed! #
-Please help me finish this library! email me at william.eatman@concordia.edu if you would like to help. :-)
+Please help me finish this library! email me at william.eatman@concordia.edu if you would like to help. :-)  We only have until the 17th!  Before the old V1 is shutdown forever!
 
 Contributors:
 
