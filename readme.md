@@ -26,6 +26,7 @@ Event Methods Implemented:
    GetAllEvents
    GetEvents
    CreateEvent
+   UpdateEvent
    RemoveAllEvents
    RemoveEvent
    

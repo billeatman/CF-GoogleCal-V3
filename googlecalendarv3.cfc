@@ -546,7 +546,63 @@
 
 </cffunction>
 
+<!--- I may move this to the V3 patch method --->
+<cffunction name="UpdateEvent" access="public" returnType="any" output="false" hint="Adds an event. Returns Success or another message.">
+    <cfargument name="calendarId" type="string" required="true" hint="Calendar identifier">
+    <cfargument name="eventId" type="string" required="true" hint="Calendar Event ID">
+    <cfargument name="summary" type="string" required="true">
+    <cfargument name="description" type="string" required="false">
+    <cfargument name="start" type="date" required="true">
+    <cfargument name="end" type="date" required="true">
+    <cfargument name="location" type="string" required="false">
+    <cfargument name="creator" type="struct" required="false">
+    <cfargument name="timeZone" type="string" required="false" default="UTC">
+    <cfargument name="resultType" required="false" default="query" type="string" hint="query, fileContent, raw">
 
+    <cfset ValidateCalendar(argumentCollection: arguments)>
 
+    <cfset local.e = new error()>
+    <cfset local.ret = false>
+
+    <cfset local.curl = "/calendars/" & urlEncodedFormat(arguments.calendarId) & "/events/" & urlEncodedFormat(arguments.eventId)>
+
+    <!--- Create Body --->    
+    <cfset local.body = structNew()>
+
+    <!--- Required Fields --->
+    <cfset local.body["start"] = {
+        'dateTime': GetISO8601(arguments.start),
+        'timeZone': arguments.timeZone
+    }>  
+    
+    <cfset local.body["end"] = {
+        'dateTime': GetISO8601(arguments.end),
+        'timeZone': arguments.timeZone
+    }>
+
+    <cfif structKeyExists(arguments, "summary")>
+        <cfset local.body["summary"] = arguments.summary>   
+    </cfif>
+
+    <cfif structKeyExists(arguments, "description")>
+        <cfset local.body["description"] = arguments.description>   
+    </cfif>
+
+    <cfif structKeyExists(arguments, "location")>
+        <cfset local.body["location"] = arguments.location> 
+    </cfif>
+
+    <cfif structKeyExists(arguments, "creator")>
+        <cfset local.body["creator"] = arguments.creator>   
+    </cfif>
+
+    <cfset ValidateCalendar(argumentCollection: arguments)>
+
+    <cfset local.body = SerializeJSON(local.body)>
+    <cfset local.result = MakeRequest(url: local.curl, method: 'PUT', body: local.body)>
+
+    <cfreturn HandleResponse(result: local.result, error: local.e, resultType: arguments.resultType)>
+
+</cffunction>
 
 </cfcomponent>
