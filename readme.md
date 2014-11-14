@@ -29,9 +29,9 @@ Event Methods Implemented:
    UpdateEvent
    RemoveAllEvents
    RemoveEvent
-   
+
 # Help Needed! #
-Please help me finish this library! email me at william.eatman@concordia.edu if you would like to help. :-)  We only have until the 17th!  Before the old V1 is shutdown forever!
+This cfc for Google Calendar V3 API is starting to take shape, but I could still use help to make it better.  Email me at william.eatman@concordia.edu if you would like to help. :-)  We only have until the 17th!  Before the old V1 is shutdown forever!
 
 Contributors:
 
