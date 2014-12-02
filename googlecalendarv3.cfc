@@ -127,13 +127,22 @@
 		<cfloop array="#fileContent.items#" index=local.i>		
 			<cfset queryAddRow(local.qCals)>
 			<cfloop collection="#local.i#" item="local.key">
-		       	<cftry>	       		
-		       	<cfset querySetCell(local.qCals, local.key, local.i[local.key])>
+                <cfset local.attribVal = local.i[local.key]>
+    
+                <cfif isSimpleValue(local.attribVal)>                
+                    <!--- filter anything starting with a '#', and take out the leading '#' --->
+                    <cfif mid(local.attribVal, 1, 1) EQ chr(35)>
+        		       	<cfset local.attribVal = mid(local.attribVal, 2, 6)>
+                    </cfif>
+                </cfif>
+
+                <cftry>
+                    <cfset querySetCell(local.qCals, local.key, local.attribVal)>
 	        	<cfcatch>
-	        		<cfif isSimpleValue(local.i[local.key])>
+	        		<cfif isSimpleValue(local.attribVal)>
 	        			<!--- add a column --->
 	        			<cfset queryAddColumn(local.qCals, local.key, arrayNew(1))>
-				       	<cfset querySetCell(local.qCals, local.key, local.i[local.key])>
+                        <cfset querySetCell(local.qCals, local.key, local.attribVal)>
 	        		</cfif>
 	        	</cfcatch>
 	        	</cftry>
@@ -516,24 +525,24 @@
     <cfif arguments.allday NEQ true>
         <!--- Required Fields --->
         <cfset local.body["start"] = {
-        	'dateTime': GetISO8601(arguments.start),
-        	'timeZone': arguments.timeZone
+        	'dateTime' = GetISO8601(arguments.start),
+        	'timeZone' = arguments.timeZone
         }>	
         
         <cfset local.body["end"] = {
-        	'dateTime': GetISO8601(arguments.end),
-        	'timeZone': arguments.timeZone
+        	'dateTime' = GetISO8601(arguments.end),
+        	'timeZone' = arguments.timeZone
         }>
     <cfelse>
         <!--- Required Fields --->
         <cfset local.body["start"] = {
-            'date': dateFormat(arguments.start, 'yyyy-mm-dd'),
-            'timeZone': arguments.timeZone
+            'date' = dateFormat(arguments.start, 'yyyy-mm-dd'),
+            'timeZone' = arguments.timeZone
         }>  
         
         <cfset local.body["end"] = {
-            'date': dateFormat(dateAdd('d', 1, arguments.end), 'yyyy-mm-dd'),
-            'timeZone': arguments.timeZone
+            'date' = dateFormat(dateAdd('d', 1, arguments.end), 'yyyy-mm-dd'),
+            'timeZone' = arguments.timeZone
         }>
     </cfif>
 
@@ -602,24 +611,24 @@
     <cfif arguments.allday NEQ true>
         <!--- Required Fields --->
         <cfset local.body["start"] = {
-            'dateTime': GetISO8601(arguments.start),
-            'timeZone': arguments.timeZone
+            'dateTime' = GetISO8601(arguments.start),
+            'timeZone' = arguments.timeZone
         }>  
         
         <cfset local.body["end"] = {
-            'dateTime': GetISO8601(arguments.end),
-            'timeZone': arguments.timeZone
+            'dateTime' = GetISO8601(arguments.end),
+            'timeZone' = arguments.timeZone
         }>
     <cfelse>
         <!--- Required Fields --->
         <cfset local.body["start"] = {
-            'date': dateFormat(arguments.start, 'yyyy-mm-dd'),
-            'timeZone': arguments.timeZone
+            'date' = dateFormat(arguments.start, 'yyyy-mm-dd'),
+            'timeZone' = arguments.timeZone
         }>  
         
         <cfset local.body["end"] = {
-            'date': dateFormat(dateAdd('d', 1, arguments.end), 'yyyy-mm-dd'),
-            'timeZone': arguments.timeZone
+            'date' = dateFormat(dateAdd('d', 1, arguments.end), 'yyyy-mm-dd'),
+            'timeZone' = arguments.timeZone
         }>
     </cfif>
 
